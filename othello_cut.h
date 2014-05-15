@@ -123,7 +123,8 @@ class state_t {
     bool is_white_move(int pos) const { return (pos == DIM) || outflank(false, pos); }
 
     void set_color(bool color, int pos);
-    state_t move(bool color, int pos) const;
+    state_t move(bool color, int pos) const throw(int);
+    std::vector<state_t> succ(bool turno) const;
     state_t black_move(int pos) { return move(true, pos); }
     state_t white_move(int pos) { return move(false, pos); }
     int get_random_move(bool color) {
@@ -200,7 +201,31 @@ inline bool state_t::outflank(bool color, int pos) const {
         if( (p < x - 1) && (p >= cols[pos - 4]) && !is_free(*p) ) return true;
     }
 
-    // [CHECK OVER DIAGONALS REMOVED]
+    // Check diagonal 1
+
+    x = dia1[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) return true;
+    }
+    if( x != cols[pos - 4] ) {
+        for( p = x - 1; (p >= dia1[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia1[pos - 4]) && !is_free(*p) ) return true;
+    }
+
+    // Check diagonal 2
+    x = dia2[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) return true;
+    }
+    if( x != cols[pos - 4] ) {
+        for( p = x - 1; (p >= dia2[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia2[pos - 4]) && !is_free(*p) ) return true;
+    }
+
 
     return false;
 }
@@ -221,13 +246,17 @@ inline void state_t::set_color(bool color, int pos) {
             pos_ &= ~(1 << pos - 4);
         }
     }
+
+    //std::printf("t_: %u \n", t_);
+    //std::printf("free_: %u \n", free_);
+    std::printf("pos_: %u \n", pos_);
 }
 
-inline state_t state_t::move(bool color, int pos) const {
+inline state_t state_t::move(bool color, int pos) const throw(int) {
     state_t s(*this);
     if( pos >= DIM ) return s;
 
-    assert(outflank(color, pos));
+    if(!outflank(color, pos)) throw(1);
     s.set_color(color, pos);
 
     // Flip color of outflanked stones
@@ -264,9 +293,56 @@ inline state_t state_t::move(bool color, int pos) const {
         }
     }
 
-    // [PROCESS OF DIAGONALS REMOVED]
+    // Check diagonal 1
+    x = dia1[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) {
+            for( const int *q = x + 1; q < p; ++q ) s.set_color(color, *q);
+        }
+    }
+    if( x != dia1[pos - 4] ) {
+        for( p = x - 1; (p >= dia1[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia1[pos - 4]) && !is_free(*p) ) {
+            for( const int *q = x - 1; q > p; --q ) s.set_color(color, *q);
+        }
+    }
+    // Check diagonal 2
+    x = dia2[pos - 4];
+    while( *x != pos ) ++x;
+    if( *(x+1) != -1 ) {
+        for( p = x + 1; (*p != -1) && !is_free(*p) && (color ^ is_black(*p)); ++p );
+        if( (p > x + 1) && (*p != -1) && !is_free(*p) ) {
+            for( const int *q = x + 1; q < p; ++q ) s.set_color(color, *q);
+        }
+    }
+    if( x != dia2[pos - 4] ) {
+        for( p = x - 1; (p >= dia2[pos - 4]) && !is_free(*p) && (color ^ is_black(*p)); --p );
+        if( (p < x - 1) && (p >= dia2[pos - 4]) && !is_free(*p) ) {
+            for( const int *q = x - 1; q > p; --q ) s.set_color(color, *q);
+        }
+    }
 
     return s;
+}
+
+inline std::vector<state_t> state_t::succ(bool turno) const{
+    std::vector<state_t> vect = std::vector<state_t>();
+    state_t nuevo;
+    //No se su se puede sin inicialirzar
+    if(this->is_full()) return vect;
+    //Se recorren las 36 posiciones del unsigned.
+    for(int i= 0; i < 36 ; i++) {
+        try {
+            nuevo = this->move(turno, i);
+        } catch(int n) {
+            continue;
+        }
+        vect.push_back(nuevo);    
+        
+    }
+    return vect;
 }
 
 inline void state_t::print(std::ostream &os, int depth) const {
