@@ -42,7 +42,7 @@ struct hash_function_t : public tr1::hash<state_t> {
 };
 
 class hash_table_t : public tr1::unordered_map<state_t, stored_info_t, hash_function_t> {
-    
+
 };
 
 int main(int argc, const char **argv) {
