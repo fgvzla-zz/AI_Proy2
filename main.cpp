@@ -18,16 +18,20 @@
  *
  */
 
-#include "othello_cut.h" // won't work correctly until .h is fixed!
+
+#include "Negamax.cpp"
 #include <iostream>
+
 
 using namespace std;
 
 int main(int argc, const char **argv) {
     state_t state;
     cout << "Principal variation:" << endl;
-    for( int i = 0; PV[i] != -1; ++i ) {
-        bool player = i % 2 == 0; // black moves first!
+    int lim = atoi(argv[1]);
+    bool player = false;
+    for( int i = 0; i < lim ; ++i ) {
+        player = i % 2 == 0; // black moves first!
         int pos = PV[i];
         cout << state;
         cout << (player ? "Black" : "White")
@@ -37,10 +41,14 @@ int main(int argc, const char **argv) {
         cout << "Board after " << i+1 << (i == 0 ? " ply:" : " plies:") << endl;
     }
     cout << state;
-    cout << "Value of the game = " << state.value() << endl;
-    cout << "#bits per state = " << sizeof(state) * 8 << endl;
+    //cout << "Value of the game = " << state.value() << endl;
+    //cout << "#bits per state = " << sizeof(state) * 8 << endl;
 
-    if( argc > 1 ) {
+    Negamax nei = Negamax(state);
+    cout << state.value() << endl;
+    cout << "Lo que dio: " << nei.busqueda(state, 34 - lim, !player, false) << "\n";
+
+    /*if( argc > 1 ) {
         int n = atoi(argv[1]);
         cout << endl << "Apply " << n << " random movements at empty board:";
         state = state_t();
@@ -51,7 +59,7 @@ int main(int argc, const char **argv) {
             cout << " " << pos;
         }
         cout << endl << state;
-    }
+    }*/
 
     return 0;
 }

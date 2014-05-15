@@ -246,10 +246,6 @@ inline void state_t::set_color(bool color, int pos) {
             pos_ &= ~(1 << pos - 4);
         }
     }
-
-    //std::printf("t_: %u \n", t_);
-    //std::printf("free_: %u \n", free_);
-    std::printf("pos_: %u \n", pos_);
 }
 
 inline state_t state_t::move(bool color, int pos) const throw(int) {
@@ -342,8 +338,12 @@ inline std::vector<state_t> state_t::succ(bool turno) const{
         vect.push_back(nuevo);    
         
     }
+    nuevo = state_t(*(this));
+    if(vect.size() == 0) vect.push_back(nuevo);
     return vect;
 }
+
+
 
 inline void state_t::print(std::ostream &os, int depth) const {
     os << "+";
