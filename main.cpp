@@ -27,18 +27,22 @@ using namespace std;
 
 int main(int argc, const char **argv) {
     state_t state;
+    std::vector<state_t> v;
     cout << "Principal variation:" << endl;
     int lim = atoi(argv[1]);
-    bool player = false;
-    for( int i = 0; i < lim ; ++i ) {
+    bool player = false, pass = false;
+    int i;
+    for(i = 0; i < lim ; ++i ) {
         player = i % 2 == 0; // black moves first!
         int pos = PV[i];
         cout << state;
         cout << (player ? "Black" : "White")
              << " moves at pos = " << pos << (pos == 36 ? " (pass)" : "")
              << endl;
+        (pos == 36 ? pass = true : pass = false);
         state = state.move(player, pos);
         cout << "Board after " << i+1 << (i == 0 ? " ply:" : " plies:") << endl;
+
     }
     cout << state;
     //cout << "Value of the game = " << state.value() << endl;
@@ -46,7 +50,7 @@ int main(int argc, const char **argv) {
 
     Negamax nei = Negamax(state);
     cout << state.value() << endl;
-    cout << "Lo que dio: " << nei.busqueda(state, 34 - lim, !player, false) << "\n";
+    cout << "Lo que dio: " << nei.busqueda(state, 34 - lim-1, !player, pass) << "\n";
 
     /*if( argc > 1 ) {
         int n = atoi(argv[1]);

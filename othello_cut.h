@@ -327,7 +327,7 @@ inline std::vector<state_t> state_t::succ(bool turno) const{
     std::vector<state_t> vect = std::vector<state_t>();
     state_t nuevo;
     //No se su se puede sin inicialirzar
-    if(this->is_full()) return vect;
+    //if(this->is_full()) return vect;
     //Se recorren las 36 posiciones del unsigned.
     for(int i= 0; i < 36 ; i++) {
         try {
