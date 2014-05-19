@@ -325,7 +325,7 @@ inline state_t state_t::move(bool color, int pos) const throw(int) {
 
 inline std::vector<state_t> state_t::succ(bool turno) const{
     std::vector<state_t> vect = std::vector<state_t>();
-    state_t nuevo;
+    state_t elMismo(*this), nuevo;
     //No se su se puede sin inicialirzar
     //if(this->is_full()) return vect;
     //Se recorren las 36 posiciones del unsigned.
@@ -338,8 +338,7 @@ inline std::vector<state_t> state_t::succ(bool turno) const{
         vect.push_back(nuevo);    
         
     }
-    nuevo = state_t(*(this));
-    if(vect.size() == 0) vect.push_back(nuevo);
+    if(vect.size() == 0) vect.push_back(elMismo);
     return vect;
 }
 

@@ -24,12 +24,12 @@ class hash_table_t : public tr1::unordered_map<state_t, int, hash_function_t> {
 
 };
 
-class Negamax{
+class NegamaxAlphaBeta{
 public:
 	hash_table_t tablaNegros;
 	hash_table_t tablaBlancos;
 
-	Negamax(state_t estado) {
+	NegamaxAlphaBeta(state_t estado) {
 		//tabla.insert(make_pair(estado, estado.value()));
 	}
 
