@@ -57,7 +57,7 @@ public:
             }
         }
 
-        if(nod.terminal()) {
+        if(nod.terminal() || depth == 0) {
             if(turn) return nod.value();
             else return -nod.value();
         }

@@ -41,7 +41,7 @@ public:
 		bool paso = false;
 		//Calculando si se tranco.
 		if(sucesores[0] == n) paso = true;
-		if(n.terminal()) {
+		if(n.terminal() || depth == 0) {
 			if(turn) return n.value();
 			else return -n.value();
 		}
