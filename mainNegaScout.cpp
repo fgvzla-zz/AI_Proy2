@@ -29,9 +29,8 @@ public:
     hash_table_t tablaUpper;
     NegaScout(){}
 
-    int busqueda(state_t nod, int depth, int alpha, int beta, bool turn, bool pass){
+    int busqueda(state_t nod, int depth, int alpha, int beta, bool turn){
         vector<state_t> sucesores = nod.succ(turn);
-        bool paso = false;
         int t;
         int m = -MAXVALUE, n = beta;
         hash_table_t::iterator it;
@@ -58,8 +57,7 @@ public:
             }
         }
 
-        if(sucesores[0] == nod) paso = true;
-        if((paso & pass) | depth==0 | nod.is_full()) {
+        if(nod.terminal()) {
             if(turn) return nod.value();
             else return -nod.value();
         }
@@ -82,12 +80,12 @@ public:
         }*/
 
         for(int i = 0; i < sucesores.size(); i++){
-            t = - busqueda(sucesores[i], depth -1, -n,-max(m,alpha),!turn,paso);
+            t = - busqueda(sucesores[i], depth -1, -n,-max(m,alpha),!turn);
             if(t>m){
                 if(n==beta || depth < 3 || t>=beta ){
                     m = t;
                 }else{
-                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn,paso);
+                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn);
                 }
             }
             if(m>=beta) return m;
@@ -108,12 +106,12 @@ public:
         return m;
         /*
         for(int i = 0; i < sucesores.size(); i++){
-            t = - busqueda(sucesores[i], depth -1, -n,-max(n,alpha),!turn,paso);
+            t = - busqueda(sucesores[i], depth -1, -n,-max(n,alpha),!turn);
             if(t>m){
                 if(n==beta | depth < 3,t>=beta ){
                     m = t;
                 }else{
-                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn,paso);
+                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn);
                 }
             }
             if(m>=beta) return m;
@@ -147,7 +145,7 @@ int main(int argc, const char **argv) {
     //cout << state;
     
     NegaScout algo = NegaScout();
-    cout << "Lo que dio: " << algo.busqueda(state, 34 - lim-1,-MAXVALUE,MAXVALUE, !player, pass) << "\n";
+    cout << "Lo que dio: " << algo.busqueda(state, 34 - lim-1,-MAXVALUE,MAXVALUE, !player) << "\n";
 
 
     return 0;

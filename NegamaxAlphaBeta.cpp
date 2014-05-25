@@ -64,7 +64,7 @@ public:
 
 		sucesores = n.succ(turn);
 		if(sucesores[0] == n) paso = true;
-		if((paso & pass) | depth==0 | n.is_full()) {
+		if(n.terminal()) {
 			if(turn) return n.value();
 			else return -n.value();
 		}

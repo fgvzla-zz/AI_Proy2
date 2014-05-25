@@ -332,11 +332,11 @@ inline std::vector<state_t> state_t::succ(bool turno) const{
     for(int i= 0; i < 36 ; i++) {
         try {
             nuevo = this->move(turno, i);
+            
         } catch(int n) {
             continue;
-        }
-        vect.push_back(nuevo);    
-        
+        }   
+        vect.push_back(nuevo); 
     }
     if(vect.size() == 0) vect.push_back(elMismo);
     return vect;

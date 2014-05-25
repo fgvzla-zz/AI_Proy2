@@ -18,7 +18,7 @@ public:
     }
     bool operador(int izq, int der)
     {
-        if(maOMe == true) return izq > der;
+        if(maOMe) return izq > der;
         else return izq < der;
     }   
 };
@@ -33,15 +33,16 @@ public:
         vector<state_t> sucesores = n.succ(turn);
         bool paso = false;
         if(sucesores[0] == n) paso = true;
-        if((paso & pass) | depth==0 | n.is_full()) {
-            /*if(turn)*/ return c.operador(n.value(),v);
-            //else return c.operador(-n.value(),v);
+        if(n.terminal()) {
+
+            return c.operador(n.value(),v);
+
         }
         for(int i=0; i < sucesores.size(); i++) {
-            if(turn == true & test(sucesores[i],depth-1,v,c,!turn,paso)){
+            if(turn == true && test(sucesores[i],depth-1,v,c,!turn,paso)){
                 return true;
             }
-            if(turn == false & !test(sucesores[i],depth-1,v,c,!turn,paso)){
+            if(turn == false && !test(sucesores[i],depth-1,v,c,!turn,paso)){
                 return false;
             }
         }
@@ -58,16 +59,19 @@ public:
         bool paso = false;
         int v;
         if(sucesores[0] == n) paso = true;
-        if((paso & pass) | depth==0 | n.is_full()) {
-            /*if(turn)*/ return n.value();
-            //else return -n.value();
+
+        if(n.terminal()) {
+            cout << "VALOR: " << n.value() << endl;
+            if(turn) return  n.value(); 
+            else  return -n.value();
+
         }
         v = busqueda(sucesores[0],depth-1,!turn,paso);
         for(int i=1; i < sucesores.size(); i++) {
-            if(turn == true & test(sucesores[i],depth-1,v,comparador(true),!turn,paso)){
+            if(turn == true && test(sucesores[i],depth-1,v,comparador(true),!turn,paso)){
                 v = busqueda(sucesores[i],depth-1,!turn,paso);
             }
-            if(turn == false & test(sucesores[i],depth-1,v,comparador(false),!turn,paso)){
+            if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn,paso)){
                 v = busqueda(sucesores[i],depth-1,!turn,paso);
             }
         }
