@@ -21,6 +21,7 @@
 
 #include "Negamax.cpp"
 #include <iostream>
+#include <chrono>
 
 
 using namespace std;
@@ -29,7 +30,7 @@ int main(int argc, const char **argv) {
     state_t state;
     std::vector<state_t> v;
     cout << "Principal variation:" << endl;
-    int lim = atoi(argv[1]);
+    int lim = atoi(argv[1]), resultado;
     bool player = false, pass = false;
     int i;
     for(i = 0; i < lim ; ++i ) {
@@ -49,23 +50,12 @@ int main(int argc, const char **argv) {
     //cout << "#bits per state = " << sizeof(state) * 8 << endl;
     Negamax nab = Negamax(state);
     cout << state.value() << endl;
-    cout << "Lo que dio: " << nab.busqueda(state, 34 - lim-1, !player, pass) << "\n";
-    /*Negamax nei = Negamax(state);
-    cout << state.value() << endl;
-    cout << "Lo que dio: " << nei.busqueda(state, 34 - lim-1, !player, pass) << "\n";*/
-
-    /*if( argc > 1 ) {
-        int n = atoi(argv[1]);
-        cout << endl << "Apply " << n << " random movements at empty board:";
-        state = state_t();
-        for( int i = 0; i < n; ++i ) {
-            bool player = i % 2 == 0; // black moves first
-            int pos = state.get_random_move(player);
-            state = state.move(player, pos);
-            cout << " " << pos;
-        }
-        cout << endl << state;
-    }*/
+    chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
+    resultado = nab.busqueda(state, 34 - lim-1, !player, pass);
+    chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
+    cout << "Negamax Resultado: " << resultado << "\n";
+    std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    cout << "Tiempo de corrida: "<<tiempo_corrida.count() << "\n";
 
     return 0;
 }

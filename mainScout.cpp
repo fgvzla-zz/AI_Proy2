@@ -3,6 +3,7 @@
 #include <tr1/unordered_map>
 #include "othello_cut.h"
 #include <iostream>
+#include <chrono>
 using namespace std;
 
 
@@ -85,7 +86,7 @@ int main(int argc, const char **argv) {
     state_t state;
     std::vector<state_t> v;
     /*cout << "Principal variation:" << endl;*/
-    int lim = atoi(argv[1]);
+    int lim = atoi(argv[1]), resultado;
     bool player = false, pass = false;
     int i;
     
@@ -104,9 +105,12 @@ int main(int argc, const char **argv) {
     cout << state;
     
     Scout algo = Scout();
-    cout << "Lo que dio: " << algo.busqueda(state, 34 - lim-1, !player) << "\n";
-
-
+    chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
+    resultado = algo.busqueda(state, 34 - lim-1, !player);
+    chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
+    cout << "Scout Resultado: " << resultado << "\n";
+    std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+    cout << "Tiempo de corrida: "<<tiempo_corrida.count() << "\n";
     return 0;
 }
 
