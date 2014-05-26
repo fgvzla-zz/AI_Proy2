@@ -1,9 +1,9 @@
 
 
 #include <tr1/unordered_map>
-#include "othello_cut.h"
 #include <iostream>
 #include <chrono>
+#include "NegamaxAlphaBeta.cpp"
 using namespace std;
 
 
@@ -32,16 +32,39 @@ public:
     bool test(state_t n, int depth, int v, comparador c,bool turn){
         
         if(n.terminal() || depth == 0) {
-
-            return c.operador(n.value(),v);
+            //return c.operador(n.value(),v);
+            return n.value() < v;
         }
         vector<state_t> sucesores = n.succ(turn);
         for(int i=0; i < sucesores.size(); i++) {
 
-            if(turn == true && test(sucesores[i],depth-1,v,c,!turn)){
+            if(turn == true && !test(sucesores[i],depth-1,v,c,!turn)){
+                return false;
+            }
+            if(turn == false && test(sucesores[i],depth-1,v,c,!turn)){
                 return true;
             }
-            if(turn == false && !test(sucesores[i],depth-1,v,c,!turn)){
+        }
+        if(turn == true){
+            return true;
+        }
+        if(turn == false){
+            return false;
+        }
+    }
+
+    bool test2(state_t n, int depth, int v, comparador c,bool turn){
+        
+        if(n.terminal() || depth == 0) {
+            return n.value() > v;
+        }
+        vector<state_t> sucesores = n.succ(turn);
+        for(int i=0; i < sucesores.size(); i++) {
+
+            if(turn == true && test2(sucesores[i],depth-1,v,c,!turn)){
+                return true;
+            }
+            if(turn == false && !test2(sucesores[i],depth-1,v,c,!turn)){
                 return false;
             }
         }
@@ -61,15 +84,16 @@ public:
             cout << "Terminal: " << ((turn) ? n.value() : -n.value());
             cout << ((turn) ? " MAX" : " MIN" ); 
             cout << endl;
-            if(turn) return n.value(); 
-            else  return -n.value();
+            return n.value();
 
         }
 
         vector<state_t> sucesores = n.succ(turn);
         v = busqueda(sucesores[0],depth-1,!turn);
         for(int i=1; i < sucesores.size(); i++) {
-            if(turn == true && test(sucesores[i],depth-1,v,comparador(true),!turn)){
+            if(turn == true && test2(sucesores[i],depth-1,v,comparador(true),!turn)){
+                NegamaxAlphaBeta buscador(sucesores[i]);
+                cout << "V = " << v << ", Valor MinMax: " << buscador.busqueda(sucesores[i], depth-1, !turn,true, -100, 100 ) << endl;
                 v = busqueda(sucesores[i],depth-1,!turn);
             }
             if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn)){
