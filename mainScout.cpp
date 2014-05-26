@@ -18,7 +18,7 @@ public:
     }
     bool operador(int izq, int der)
     {
-        if(maOMe == true) return izq > der;
+        if(maOMe) return izq > der;
         else return izq < der;
     }   
 };
@@ -28,20 +28,19 @@ public:
     Scout(){
 
     }
+    bool test(state_t n, int depth, int v, comparador c,bool turn){
+        
+        if(n.terminal() || depth == 0) {
 
-    bool test(state_t n, int depth, int v, comparador c,bool turn, bool pass){
-        vector<state_t> sucesores = n.succ(turn);
-        bool paso = false;
-        if(sucesores[0] == n) paso = true;
-        if((paso & pass) || depth==0 || n.is_full()) {
-            /*if(turn)*/ return c.operador(n.value(),v);
-            //else return c.operador(-n.value(),v);
+            return c.operador(n.value(),v);
         }
+        vector<state_t> sucesores = n.succ(turn);
         for(int i=0; i < sucesores.size(); i++) {
-            if(turn == true && test(sucesores[i],depth-1,v,c,!turn,paso)){
+
+            if(turn == true && test(sucesores[i],depth-1,v,c,!turn)){
                 return true;
             }
-            if(turn == false && !test(sucesores[i],depth-1,v,c,!turn,paso)){
+            if(turn == false && !test(sucesores[i],depth-1,v,c,!turn)){
                 return false;
             }
         }
@@ -53,22 +52,27 @@ public:
         }
     }
 
-    int busqueda(state_t n, int depth,bool turn,bool pass){
-        vector<state_t> sucesores = n.succ(turn);
-        bool paso = false;
+    int busqueda(state_t n, int depth,bool turn){
+       
         int v;
-        if(sucesores[0] == n) paso = true;
-        if((paso & pass) | depth==0 | n.is_full()) {
-            /*if(turn)*/ return n.value();
-            //else return -n.value();
+
+        if(n.terminal() || depth == 0) {
+            cout << "Terminal: " << ((turn) ? n.value() : -n.value());
+            cout << ((turn) ? " MAX" : " MIN" ); 
+            cout << endl;
+            if(turn) return n.value(); 
+            else  return -n.value();
+
         }
-        v = busqueda(sucesores[0],depth-1,!turn,paso);
+
+        vector<state_t> sucesores = n.succ(turn);
+        v = busqueda(sucesores[0],depth-1,!turn);
         for(int i=1; i < sucesores.size(); i++) {
-            if(turn == true & test(sucesores[i],depth-1,v,comparador(true),!turn,paso)){
-                v = busqueda(sucesores[i],depth-1,!turn,paso);
+            if(turn == true && test(sucesores[i],depth-1,v,comparador(true),!turn)){
+                v = busqueda(sucesores[i],depth-1,!turn);
             }
-            if(turn == false & test(sucesores[i],depth-1,v,comparador(false),!turn,paso)){
-                v = busqueda(sucesores[i],depth-1,!turn,paso);
+            if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn)){
+                v = busqueda(sucesores[i],depth-1,!turn);
             }
         }
         return v;
@@ -97,10 +101,10 @@ int main(int argc, const char **argv) {
         //cout << "Board after " << i+1 << (i == 0 ? " ply:" : " plies:") << endl;
 
     }
-    //cout << state;
+    cout << state;
     
     Scout algo = Scout();
-    cout << "Lo que dio: " << algo.busqueda(state, 34 - lim-1, !player, pass) << "\n";
+    cout << "Lo que dio: " << algo.busqueda(state, 34 - lim-1, !player) << "\n";
 
 
     return 0;

@@ -14,7 +14,8 @@ struct stored_info_t {
     }
 };
 
-struct hash_function_t : public tr1::hash<state_t> {
+struct hash_function_t : public tr1::hash<state_t>
+ {
     size_t operator()(const state_t &state) const {
         return state.hash();
     }
@@ -40,7 +41,7 @@ public:
 		bool paso = false;
 		//Calculando si se tranco.
 		if(sucesores[0] == n) paso = true;
-		if((paso & pass) | depth==0 | n.is_full()) {
+		if(n.terminal() || depth == 0) {
 			if(turn) return n.value();
 			else return -n.value();
 		}
