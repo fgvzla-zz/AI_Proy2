@@ -2,17 +2,9 @@
 #include <tr1/unordered_map>
 #include "othello_cut.h"
 #include <iostream>
+#include <fstream>
 #include <chrono>
 using namespace std;
-struct stored_info_t {
-    // [information to be stored in hash table]
-    int infor_;
-    stored_info_t() { } // need at least one ctor without arguments
-    int infor() const { return infor_; }
-    void setInfo(int profundo){
-        infor_ = profundo;
-    }
-};
 
 struct hash_function_t : public tr1::hash<state_t> {
     size_t operator()(const state_t &state) const {
@@ -23,6 +15,7 @@ struct hash_function_t : public tr1::hash<state_t> {
 class hash_table_t : public tr1::unordered_map<state_t, pair<int, int>, hash_function_t> {
 
 };
+
 class NegaScout{
 public:
     hash_table_t tablaExact;
@@ -62,23 +55,6 @@ public:
             if(turn) return nod.value();
             else return -nod.value();
         }
-        
-
-        /*for(int i = 0; i < sucesores.size();i++){
-            if(i != 0){
-                t = -busqueda(sucesores[i],depth-1,-m-1,-m,!turn,paso);
-                if(m < t < beta){
-                    t = -busqueda(sucesores[i],depth-1, -beta,-t, !turn, paso);
-                }
-
-            }else{
-                t = -busqueda(sucesores[i],depth-1, -beta,-m, !turn,paso);    
-            }
-            m = max(m,t);
-            if(m >= beta){
-                break;
-            }
-        }*/
 
         for(int i = 0; i < sucesores.size(); i++){
             t = - busqueda(sucesores[i], depth -1, -n,-max(m,alpha),!turn);
@@ -93,6 +69,7 @@ public:
             n=max(alpha,m)+1;
         }
 
+        //Se revisa a que tabla de hash corresponde y se inserta.
         if(m <= alpha) {
             tablaUpper.erase(nod);
             tablaUpper.insert(make_pair(nod, make_pair(m, depth)));
@@ -105,53 +82,49 @@ public:
         }
 
         return m;
-        /*
-        for(int i = 0; i < sucesores.size(); i++){
-            t = - busqueda(sucesores[i], depth -1, -n,-max(n,alpha),!turn);
-            if(t>m){
-                if(n==beta | depth < 3,t>=beta ){
-                    m = t;
-                }else{
-                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn);
-                }
-            }
-            if(m>=beta) return m;
-            n=max(alpha,m)+1;
-        }
-        return m;
-        */
     }
 };
 
-int main(int argc, const char **argv) {
+int main() {
     state_t state;
     std::vector<state_t> v;
-    /*cout << "Principal variation:" << endl;*/
-    int lim = atoi(argv[1]), resultado;
-    bool player = false, pass = false;
-    int i;
+
     
-    for(i = 0; i < lim ; ++i ) {
+
+    ofstream output; //stream para archivo de salida
+    streambuf *coutbuf; // stream para guardar salida standard
+
+    coutbuf = cout.rdbuf();
+    output.open("resultadosNegaScout2.txt");
+    cout.rdbuf(output.rdbuf()); //Se cambia salida standard al archivo de salida
+
+for(int j = 33; j >=0; j--){
+    state_t state;
+    int resultado;
+    bool player = false;
+    int i;
+    for(i = 0; i < j ; ++i ) {
         player = i % 2 == 0; // black moves first!
         int pos = PV[i];
-        //cout << state;
-        //cout << (player ? "Black" : "White")
-        //     << " moves at pos = " << pos << (pos == 36 ? " (pass)" : "")
-        //     << endl;
-        (pos == 36 ? pass = true : pass = false);
         state = state.move(player, pos);
-        //cout << "Board after " << i+1 << (i == 0 ? " ply:" : " plies:") << endl;
-
     }
-    
-    NegaScout algo = NegaScout();
-    //Se corre y se toma el tiempo.
-    chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
-    resultado = algo.busqueda(state, 34 - lim-1,-MAXVALUE,MAXVALUE, !player);
-    chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
-    cout << "NegaScout Resultado: " << resultado << "\n";
-    std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-    cout << "Tiempo de corrida: "<<tiempo_corrida.count() << "\n";
+
+
+        NegaScout nab = NegaScout();
+        chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
+        resultado = nab.busqueda(state, 34 - j-1,-MAXVALUE,MAXVALUE, !player);
+        chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
+        cout <<  j;
+        std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+        if(tiempo_corrida.count() >= 3600){
+            break;
+
+        }
+        cout << ", "<<tiempo_corrida.count() << "\n";
+        cerr << "Termino " << j << endl;
+    }
+
+    output.close();
 
 
     return 0;

@@ -326,10 +326,9 @@ inline state_t state_t::move(bool color, int pos) const throw(int) {
 inline std::vector<state_t> state_t::succ(bool turno) const{
     std::vector<state_t> vect = std::vector<state_t>();
     state_t elMismo(*this), nuevo;
-    //No se su se puede sin inicialirzar
-    //if(this->is_full()) return vect;
     //Se recorren las 36 posiciones del unsigned.
     for(int i= 0; i < 36 ; i++) {
+        //Si el outflank dio false, se hace catch a la excepcion y no se mueve esta posicion
         try {
             nuevo = this->move(turno, i);
             
