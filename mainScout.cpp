@@ -40,9 +40,9 @@ public:
     Scout(){
 
     }
-    pair<bool,long int> test(state_t n, int depth, int v, comparador c,bool turn){
-        pair<bool,long int> test_generados;
-        long int numSuc;
+    pair<bool,long long int> test(state_t n, int depth, int v, comparador c,bool turn){
+        pair<bool,long long int> test_generados;
+        long long int numSuc = 0;
         if(n.terminal() || depth == 0) {
             return make_pair(n.value() < v,0);
         }
@@ -53,25 +53,25 @@ public:
             if(turn == true ){
                 test_generados = test(sucesores[i],depth-1,v,c,!turn);
                 numSuc += test_generados.second;
-                if(!test_generados.first) return make_pair(false,0);
+                if(!test_generados.first) return make_pair(false,numSuc);
             }
             if(turn == false ){
                 test_generados = test(sucesores[i],depth-1,v,c,!turn);
                 numSuc += test_generados.second;
-                if(test_generados.first) return make_pair(true,0);
+                if(test_generados.first) return make_pair(true,numSuc);
             }
         }
         if(turn == true){
-            return make_pair(true,0);
+            return make_pair(true,numSuc);
         }
         if(turn == false){
-            return make_pair(false,0);
+            return make_pair(false,numSuc);
         }
     }
 
-    pair<bool,long int> test2(state_t n, int depth, int v, comparador c,bool turn){
-        pair<bool,long int> test_generados;
-        long int numSuc;
+    pair<bool,long long int> test2(state_t n, int depth, int v, comparador c,bool turn){
+        pair<bool,long long int> test_generados;
+        long long int numSuc = 0;
         if(n.terminal() || depth == 0) {
             return make_pair(n.value() > v,0);
         }
@@ -82,28 +82,28 @@ public:
             if(turn == true){
                 test_generados =  test2(sucesores[i],depth-1,v,c,!turn);
                 numSuc += test_generados.second;
-                if(test_generados.first) return make_pair(true, 0);
+                if(test_generados.first) return make_pair(true, numSuc);
                 
             }
             if(turn == false ){
                 test_generados = test2(sucesores[i],depth-1,v,c,!turn);
                 numSuc += test_generados.second;
-                if(!test_generados.first) return make_pair(false, 0);
+                if(!test_generados.first) return make_pair(false, numSuc);
             }
         }
         if(turn == true){
-            return make_pair(false,0);
+            return make_pair(false,numSuc);
         }
         if(turn == false){
-            return make_pair(true,0);
+            return make_pair(true,numSuc);
         }
     }
 
-    pair<int,long int> busqueda(state_t n, int depth,bool turn){
+    pair<int,long long int> busqueda(state_t n, int depth,bool turn){
         hash_table_t::iterator it;
-        pair<int,long int> valor_generados;
-        pair<bool,long int> test_generados;
-        long int numSuc = 0;
+        pair<int,long long int> valor_generados;
+        pair<bool,long long int> test_generados;
+        long long int numSuc = 0;
         it = tabla.find(n);
         if(it != tabla.end()) return make_pair((*it).second,0);
         if(n.terminal() || depth == 0) {
@@ -148,7 +148,7 @@ int main() {
     state_t state;
     std::vector<state_t> v;
 
-    pair<int,long int> valor_generados;
+    pair<int,long long int> valor_generados;
 
     ofstream output; //stream para archivo de salida
     streambuf *coutbuf; // stream para guardar salida standard

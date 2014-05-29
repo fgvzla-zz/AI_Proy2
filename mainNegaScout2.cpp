@@ -25,7 +25,7 @@ public:
     pair<int,int> busqueda(state_t nod, int depth, int alpha, int beta, bool turn){
     	pair<int,int> valor_generados;
     	int v;
-    	int numSuc;
+    	int numSuc = 0;
     	if(nod.terminal() || depth == 0){
     		if(turn) return make_pair(nod.value(),0);
     		else return make_pair(-nod.value(),0);
@@ -36,6 +36,7 @@ public:
     		if(i > 0){
     			valor_generados = busqueda(sucesores[i], depth -1, -alpha-1, -alpha, !turn);
 	    		v = -valor_generados.first;
+	    		numSuc += valor_generados.second;
 	    		if(alpha < v && v < beta && depth > 1){
 	    			valor_generados = busqueda(sucesores[i], depth -1, -beta, -v, !turn);
 	    			v = max(-valor_generados.first,v);
@@ -45,7 +46,7 @@ public:
     		else{
     			valor_generados = busqueda(sucesores[i], depth -1, -beta, -alpha, !turn);
     			v = -valor_generados.first;
-    			//numSuc += valor_generados.second;
+    			numSuc += valor_generados.second;
     		}
     		alpha = max(alpha, v);
     		if(alpha >= beta) break;
