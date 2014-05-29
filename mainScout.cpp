@@ -2,13 +2,22 @@
 
 #include <tr1/unordered_map>
 #include <iostream>
-#include <chrono>
 #include "othello_cut.h"
-//#include "NegamaxAlphaBeta.cpp"
+#include <fstream>
+#include <chrono>
+
 using namespace std;
 
+struct hash_function_t : public tr1::hash<state_t>
+ {
+    size_t operator()(const state_t &state) const {
+        return state.hash();
+    }
+};
 
+class hash_table_t : public tr1::unordered_map<state_t, int, hash_function_t> {
 
+};
 class comparador{//Clase para la comparacion de costos de nodo
     bool maOMe;
 
@@ -27,13 +36,13 @@ public:
 
 class Scout{
 public:
+    hash_table_t tabla;
     Scout(){
 
     }
     bool test(state_t n, int depth, int v, comparador c,bool turn){
         
         if(n.terminal() || depth == 0) {
-            //return c.operador(n.value(),v);
             return n.value() < v;
         }
         vector<state_t> sucesores = n.succ(turn);
@@ -78,13 +87,11 @@ public:
     }
 
     int busqueda(state_t n, int depth,bool turn){
-       
+        hash_table_t::iterator it;
         int v;
-
+        it = tabla.find(n);
+        if(it != tabla.end()) return (*it).second;
         if(n.terminal() || depth == 0) {
-            //cout << "Terminal: " << ((turn) ? n.value() : -n.value());
-            //cout << ((turn) ? " MAX" : " MIN" ); 
-            //cout << endl;
             return n.value();
 
         }
@@ -93,49 +100,62 @@ public:
         v = busqueda(sucesores[0],depth-1,!turn);
         for(int i=1; i < sucesores.size(); i++) {
             if(turn == true && test2(sucesores[i],depth-1,v,comparador(true),!turn)){
-                //NegamaxAlphaBeta buscador(sucesores[i]);
-                //cout << "V = " << v << ", Valor MinMax: " << buscador.busqueda(sucesores[i], depth-1, !turn,true, -100, 100 ) << endl;
+
                 v = busqueda(sucesores[i],depth-1,!turn);
             }
             if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn)){
                 v = busqueda(sucesores[i],depth-1,!turn);
             }
         }
+
+        tabla.insert(make_pair(n, v));
+
         return v;
 
     }
 
 };
 
-int main(int argc, const char **argv) {
+int main() {
     state_t state;
     std::vector<state_t> v;
-    /*cout << "Principal variation:" << endl;*/
-    int lim = atoi(argv[1]), resultado;
+
+    
+
+    ofstream output; //stream para archivo de salida
+    streambuf *coutbuf; // stream para guardar salida standard
+
+    coutbuf = cout.rdbuf();
+    output.open("resultadosScout.txt");
+    cout.rdbuf(output.rdbuf()); //Se cambia salida standard al archivo de salida
+
+for(int j = 33; j >=0; j--){
+    state_t state;
+    int resultado;
     bool player = false, pass = false;
     int i;
-    
-    for(i = 0; i < lim ; ++i ) {
+    for(i = 0; i < j ; ++i ) {
         player = i % 2 == 0; // black moves first!
         int pos = PV[i];
-        //cout << state;
-        //cout << (player ? "Black" : "White")
-        //     << " moves at pos = " << pos << (pos == 36 ? " (pass)" : "")
-        //     << endl;
-        (pos == 36 ? pass = true : pass = false);
         state = state.move(player, pos);
-        //cout << "Board after " << i+1 << (i == 0 ? " ply:" : " plies:") << endl;
-
     }
-    cout << state;
-    
-    Scout algo = Scout();
-    chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
-    resultado = algo.busqueda(state, 34 - lim-1, !player);
-    chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
-    cout << "Scout Resultado: " << resultado << "\n";
-    std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-    cout << "Tiempo de corrida: "<<tiempo_corrida.count() << "\n";
+
+
+        Scout nab = Scout();
+        chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
+        resultado = nab.busqueda(state, 34 - j-1, !player);
+        chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
+        cout <<  j;
+        std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+        if(tiempo_corrida.count() >= 3600){
+            break;
+
+        }
+        cout << ", "<<tiempo_corrida.count() << "\n";
+        cerr << "Termino " << j << endl;
+    }
+
+    output.close();
     return 0;
 }
 

@@ -7,16 +7,6 @@
 #include <tr1/unordered_map>
 using namespace std;
 
-struct stored_info_t {
-    // [information to be stored in hash table]
-    int infor_;
-    stored_info_t() { } // need at least one ctor without arguments
-    int infor() const { return infor_; }
-    void setInfo(int profundo){
-        infor_ = profundo;
-    }
-};
-
 struct hash_function_t : public tr1::hash<state_t>
  {
     size_t operator()(const state_t &state) const {
@@ -34,6 +24,7 @@ public:
 	hash_table_t tablaBlancos;
 
 	Negamax() {
+
 	}
 
 	int busqueda(state_t n, int depth, bool turn) {
@@ -44,7 +35,9 @@ public:
 			if(turn) return n.value();
 			else return -n.value();
 		}
+
 		for(int i=0; i < sucesores.size(); i++) {
+			//Se tienen dos tablas, la tabla de blancos contiene los valores de los estados que se generaron por mover blanco.
 			if(!turn) {
 				it = tablaBlancos.find(sucesores[i]);
 				if(it == tablaBlancos.end()) {

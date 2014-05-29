@@ -29,7 +29,7 @@ public:
 	hash_table_t tablaExact;
 	hash_table_t tablaLower;
 	hash_table_t tablaUpper;
-	NegamaxAlphaBeta(state_t estado) {
+	NegamaxAlphaBeta() {
 		//tabla.insert(make_pair(estado, estado.value()));
 	}
 
