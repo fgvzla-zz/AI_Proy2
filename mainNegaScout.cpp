@@ -23,49 +23,55 @@ public:
     hash_table_t tablaUpper;
     NegaScout(){}
 
-    int busqueda(state_t nod, int depth, int alpha, int beta, bool turn){
+    pair<int,int> busqueda(state_t nod, int depth, int alpha, int beta, bool turn){
         vector<state_t> sucesores = nod.succ(turn);
         int t;
+        int numSuc = sucesores.size();
+        pair <int,int> valor_generados; //Par de enteros. El primer es el valor del juego, el segundo es el numero de nodos generados.
         int m = -MAXVALUE, n = beta;
         hash_table_t::iterator it;
 
         //Se busca en las tablas de hash correspondientes.
         it = tablaExact.find(nod);
         if(it != tablaExact.end()) {
-            if((*it).second.second >= depth) return (*it).second.first;
+            if((*it).second.second >= depth) return make_pair((*it).second.first,numSuc);
         } else {
             it = tablaLower.find(nod);
             if(it != tablaLower.end()) {
                 if((*it).second.second >= depth){
                     m = max(m, (*it).second.first);
-                    if(m >= beta) return (*it).second.first;
+                    if(m >= beta) return make_pair((*it).second.first,numSuc);
                 }
             } else {
                 it = tablaUpper.find(nod);
                 if(it != tablaUpper.end()) {
                     if((*it).second.second >= depth) {
                         beta = min(beta, (*it).second.first);
-                        if(m >= beta) return (*it).second.first;
+                        if(m >= beta) return make_pair((*it).second.first,numSuc);
                     }
                 }
             }
         }
 
         if(nod.terminal() || depth == 0) {
-            if(turn) return nod.value();
-            else return -nod.value();
+            if(turn) return make_pair(nod.value(),numSuc);
+            else return make_pair(-nod.value(),numSuc);
         }
 
         for(int i = 0; i < sucesores.size(); i++){
-            t = - busqueda(sucesores[i], depth -1, -n,-max(m,alpha),!turn);
+            valor_generados = busqueda(sucesores[i], depth -1, -n,-max(m,alpha),!turn);
+            t = -valor_generados.first;
+            numSuc += valor_generados.second;
             if(t>m){
                 if(n==beta || depth < 3 || t>=beta ){
                     m = t;
                 }else{
-                    m = -busqueda(sucesores[i],depth-1,-beta,-t,!turn);
+                    valor_generados = busqueda(sucesores[i],depth-1,-beta,-t,!turn);
+                    m = -valor_generados.first;
+                    numSuc += valor_generados.second;
                 }
             }
-            if(m>=beta) return m;
+            if(m>=beta) return make_pair(m,numSuc);
             n=max(alpha,m)+1;
         }
 
@@ -81,7 +87,7 @@ public:
             tablaExact.insert(make_pair(nod, make_pair(m, depth)));
         }
 
-        return m;
+        return make_pair(m,numSuc);
     }
 };
 
@@ -101,6 +107,7 @@ int main() {
 for(int j = 33; j >=0; j--){
     state_t state;
     int resultado;
+    pair <int,int> valor_generados;
     bool player = false;
     int i;
     for(i = 0; i < j ; ++i ) {
@@ -112,15 +119,18 @@ for(int j = 33; j >=0; j--){
 
         NegaScout nab = NegaScout();
         chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
-        resultado = nab.busqueda(state, 34 - j-1,-MAXVALUE,MAXVALUE, !player);
+        valor_generados = nab.busqueda(state, 34 - j-1,-MAXVALUE,MAXVALUE, !player);
         chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
-        cout <<  j;
+        
         std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
         if(tiempo_corrida.count() >= 3600){
             break;
 
         }
-        cout << ", "<<tiempo_corrida.count() << "\n";
+        cout <<  j << ", Resultado = "<< valor_generados.first;
+        cout << ", "<<tiempo_corrida.count();
+        cout << ", Nodos generados: " << valor_generados.second;
+        cout << ", Nodos/seg: " << valor_generados.second/tiempo_corrida.count() << endl;
         cerr << "Termino " << j << endl;
     }
 
