@@ -24,38 +24,41 @@ public:
     NegaScout(){}
 
     pair<int,int> busqueda(state_t nod, int depth, int alpha, int beta, bool turn){
-        vector<state_t> sucesores = nod.succ(turn);
         int t;
-        int numSuc = sucesores.size();
+
         pair <int,int> valor_generados; //Par de enteros. El primer es el valor del juego, el segundo es el numero de nodos generados.
         int m = -MAXVALUE, n = beta;
         hash_table_t::iterator it;
 
         //Se busca en las tablas de hash correspondientes.
+        
         it = tablaExact.find(nod);
         if(it != tablaExact.end()) {
-            if((*it).second.second >= depth) return make_pair((*it).second.first,numSuc);
+            if((*it).second.second >= depth) return make_pair((*it).second.first,0);
         } else {
             it = tablaLower.find(nod);
             if(it != tablaLower.end()) {
                 if((*it).second.second >= depth){
                     m = max(m, (*it).second.first);
-                    if(m >= beta) return make_pair((*it).second.first,numSuc);
+                    if(m >= beta) return make_pair((*it).second.first,0);
                 }
             } else {
                 it = tablaUpper.find(nod);
                 if(it != tablaUpper.end()) {
                     if((*it).second.second >= depth) {
                         beta = min(beta, (*it).second.first);
-                        if(m >= beta) return make_pair((*it).second.first,numSuc);
+                        if(m >= beta) return make_pair((*it).second.first,0);
                     }
                 }
             }
         }
-
+        vector<state_t> sucesores = nod.succ(turn);
+        
+        int numSuc = sucesores.size();
+        
         if(nod.terminal() || depth == 0) {
-            if(turn) return make_pair(nod.value(),numSuc);
-            else return make_pair(-nod.value(),numSuc);
+            if(turn) return make_pair(nod.value(),0);
+            else return make_pair(-nod.value(),0);
         }
 
         for(int i = 0; i < sucesores.size(); i++){
@@ -76,6 +79,7 @@ public:
         }
 
         //Se revisa a que tabla de hash corresponde y se inserta.
+        
         if(m <= alpha) {
             tablaUpper.erase(nod);
             tablaUpper.insert(make_pair(nod, make_pair(m, depth)));
@@ -86,7 +90,7 @@ public:
             tablaExact.erase(nod);
             tablaExact.insert(make_pair(nod, make_pair(m, depth)));
         }
-
+        
         return make_pair(m,numSuc);
     }
 };

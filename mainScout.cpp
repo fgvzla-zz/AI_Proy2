@@ -40,77 +40,105 @@ public:
     Scout(){
 
     }
-    bool test(state_t n, int depth, int v, comparador c,bool turn){
-        
+    pair<bool,long int> test(state_t n, int depth, int v, comparador c,bool turn){
+        pair<bool,long int> test_generados;
+        long int numSuc;
         if(n.terminal() || depth == 0) {
-            return n.value() < v;
+            return make_pair(n.value() < v,0);
         }
         vector<state_t> sucesores = n.succ(turn);
+        numSuc += sucesores.size();
         for(int i=0; i < sucesores.size(); i++) {
 
-            if(turn == true && !test(sucesores[i],depth-1,v,c,!turn)){
-                return false;
+            if(turn == true ){
+                test_generados = test(sucesores[i],depth-1,v,c,!turn);
+                numSuc += test_generados.second;
+                if(!test_generados.first) return make_pair(false,0);
             }
-            if(turn == false && test(sucesores[i],depth-1,v,c,!turn)){
-                return true;
+            if(turn == false ){
+                test_generados = test(sucesores[i],depth-1,v,c,!turn);
+                numSuc += test_generados.second;
+                if(test_generados.first) return make_pair(true,0);
             }
         }
         if(turn == true){
-            return true;
+            return make_pair(true,0);
         }
         if(turn == false){
-            return false;
+            return make_pair(false,0);
         }
     }
 
-    bool test2(state_t n, int depth, int v, comparador c,bool turn){
-        
+    pair<bool,long int> test2(state_t n, int depth, int v, comparador c,bool turn){
+        pair<bool,long int> test_generados;
+        long int numSuc;
         if(n.terminal() || depth == 0) {
-            return n.value() > v;
+            return make_pair(n.value() > v,0);
         }
         vector<state_t> sucesores = n.succ(turn);
+        numSuc += sucesores.size();
         for(int i=0; i < sucesores.size(); i++) {
 
-            if(turn == true && test2(sucesores[i],depth-1,v,c,!turn)){
-                return true;
+            if(turn == true){
+                test_generados =  test2(sucesores[i],depth-1,v,c,!turn);
+                numSuc += test_generados.second;
+                if(test_generados.first) return make_pair(true, 0);
+                
             }
-            if(turn == false && !test2(sucesores[i],depth-1,v,c,!turn)){
-                return false;
+            if(turn == false ){
+                test_generados = test2(sucesores[i],depth-1,v,c,!turn);
+                numSuc += test_generados.second;
+                if(!test_generados.first) return make_pair(false, 0);
             }
         }
         if(turn == true){
-            return false;
+            return make_pair(false,0);
         }
         if(turn == false){
-            return true;
+            return make_pair(true,0);
         }
     }
 
-    int busqueda(state_t n, int depth,bool turn){
+    pair<int,long int> busqueda(state_t n, int depth,bool turn){
         hash_table_t::iterator it;
-        int v;
+        pair<int,long int> valor_generados;
+        pair<bool,long int> test_generados;
+        long int numSuc = 0;
         it = tabla.find(n);
-        if(it != tabla.end()) return (*it).second;
+        if(it != tabla.end()) return make_pair((*it).second,0);
         if(n.terminal() || depth == 0) {
-            return n.value();
+            return make_pair(n.value(),0);
 
         }
 
         vector<state_t> sucesores = n.succ(turn);
-        v = busqueda(sucesores[0],depth-1,!turn);
+        numSuc += sucesores.size();
+        valor_generados = busqueda(sucesores[0],depth-1,!turn);
+        numSuc += valor_generados.second;
         for(int i=1; i < sucesores.size(); i++) {
-            if(turn == true && test2(sucesores[i],depth-1,v,comparador(true),!turn)){
-
-                v = busqueda(sucesores[i],depth-1,!turn);
+            if(turn == true){
+                test_generados = test2(sucesores[i],depth-1,valor_generados.first,comparador(true),!turn);
+                numSuc += test_generados.second;
+                if( test_generados.first){
+                    valor_generados = busqueda(sucesores[i],depth-1,!turn);
+                    numSuc += valor_generados.second;
+                }
             }
-            if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn)){
-                v = busqueda(sucesores[i],depth-1,!turn);
+            
+            if(turn == false){
+                test_generados = test(sucesores[i],depth-1,valor_generados.first,comparador(false),!turn);
+                numSuc += test_generados.second;
+                if(test_generados.first){
+                    valor_generados = busqueda(sucesores[i],depth-1,!turn);    
+                    numSuc+= valor_generados.second;
+                }
+                
             }
         }
 
-        tabla.insert(make_pair(n, v));
+        tabla.insert(make_pair(n, valor_generados.first));
 
-        return v;
+        return make_pair(valor_generados.first,numSuc);
 
     }
 
@@ -120,7 +148,7 @@ int main() {
     state_t state;
     std::vector<state_t> v;
 
-    
+    pair<int,long int> valor_generados;
 
     ofstream output; //stream para archivo de salida
     streambuf *coutbuf; // stream para guardar salida standard
@@ -143,15 +171,17 @@ for(int j = 33; j >=0; j--){
 
         Scout nab = Scout();
         chrono::steady_clock::time_point t1 = chrono::steady_clock::now();
-        resultado = nab.busqueda(state, 34 - j-1, !player);
+        valor_generados = nab.busqueda(state, 34 - j-1, !player);
         chrono::steady_clock::time_point t2 = chrono::steady_clock::now();
-        cout <<  j;
         std::chrono::duration<double> tiempo_corrida = chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
         if(tiempo_corrida.count() >= 3600){
             break;
 
         }
-        cout << ", "<<tiempo_corrida.count() << "\n";
+        cout <<  j << ", Resultado = "<< valor_generados.first;
+        cout << ", "<<tiempo_corrida.count();
+        cout << ", Nodos generados: " << valor_generados.second;
+        cout << ", Nodos/seg: " << valor_generados.second/tiempo_corrida.count() << endl;
         cerr << "Termino " << j << endl;
     }
 
