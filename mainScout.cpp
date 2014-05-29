@@ -3,7 +3,8 @@
 #include <tr1/unordered_map>
 #include <iostream>
 #include <chrono>
-#include "NegamaxAlphaBeta.cpp"
+#include "othello_cut.h"
+//#include "NegamaxAlphaBeta.cpp"
 using namespace std;
 
 
@@ -81,9 +82,9 @@ public:
         int v;
 
         if(n.terminal() || depth == 0) {
-            cout << "Terminal: " << ((turn) ? n.value() : -n.value());
-            cout << ((turn) ? " MAX" : " MIN" ); 
-            cout << endl;
+            //cout << "Terminal: " << ((turn) ? n.value() : -n.value());
+            //cout << ((turn) ? " MAX" : " MIN" ); 
+            //cout << endl;
             return n.value();
 
         }
@@ -92,8 +93,8 @@ public:
         v = busqueda(sucesores[0],depth-1,!turn);
         for(int i=1; i < sucesores.size(); i++) {
             if(turn == true && test2(sucesores[i],depth-1,v,comparador(true),!turn)){
-                NegamaxAlphaBeta buscador(sucesores[i]);
-                cout << "V = " << v << ", Valor MinMax: " << buscador.busqueda(sucesores[i], depth-1, !turn,true, -100, 100 ) << endl;
+                //NegamaxAlphaBeta buscador(sucesores[i]);
+                //cout << "V = " << v << ", Valor MinMax: " << buscador.busqueda(sucesores[i], depth-1, !turn,true, -100, 100 ) << endl;
                 v = busqueda(sucesores[i],depth-1,!turn);
             }
             if(turn == false && test(sucesores[i],depth-1,v,comparador(false),!turn)){
