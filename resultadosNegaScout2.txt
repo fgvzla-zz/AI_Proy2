@@ -1,16 +1,19 @@
-33, 0.000246
-32, 0.00037
-31, 0.001004
-30, 0.001114
-29, 0.003331
-28, 0.003731
-27, 0.006183
-26, 0.01706
-25, 0.053308
-24, 0.226497
-23, 0.339149
-22, 0.641626
-21, 1.63342
-20, 7.12211
-19, 14.0243
-18, 23.8292
+33, Resultado = 4, 0.000446961, Nodos generados: 0, Nodos/seg: 0
+32, Resultado = -4, 0.000714955, Nodos generados: 1, Nodos/seg: 1398.69
+31, Resultado = 4, 0.00185655, Nodos generados: 4, Nodos/seg: 2154.54
+30, Resultado = -4, 0.00211133, Nodos generados: 5, Nodos/seg: 2368.17
+29, Resultado = 4, 0.00658876, Nodos generados: 17, Nodos/seg: 2580.15
+28, Resultado = -4, 0.0066977, Nodos generados: 18, Nodos/seg: 2687.49
+27, Resultado = 4, 0.0108645, Nodos generados: 40, Nodos/seg: 3681.7
+26, Resultado = -4, 0.0122654, Nodos generados: 99, Nodos/seg: 8071.47
+25, Resultado = 4, 0.0441701, Nodos generados: 379, Nodos/seg: 8580.47
+24, Resultado = -4, 0.188051, Nodos generados: 1659, Nodos/seg: 8822.07
+23, Resultado = 4, 0.264713, Nodos generados: 2377, Nodos/seg: 8979.55
+22, Resultado = -4, 0.491311, Nodos generados: 4563, Nodos/seg: 9287.4
+21, Resultado = 4, 1.23647, Nodos generados: 10865, Nodos/seg: 8787.1
+20, Resultado = -4, 5.55342, Nodos generados: 49359, Nodos/seg: 8888.04
+19, Resultado = 4, 11.2878, Nodos generados: 100149, Nodos/seg: 8872.33
+18, Resultado = -4, 19.2273, Nodos generados: 171439, Nodos/seg: 8916.45
+17, Resultado = 4, 76.4861, Nodos generados: 674552, Nodos/seg: 8819.28
+16, Resultado = -4, 131.505, Nodos generados: 1160660, Nodos/seg: 8825.96
+15, Resultado = 4, 980.942, Nodos generados: 7182019, Nodos/seg: 7321.56
