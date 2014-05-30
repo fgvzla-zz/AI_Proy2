@@ -81,13 +81,13 @@ public:
         //Se revisa a que tabla de hash corresponde y se inserta.
         
         if(m <= alpha) {
-            tablaUpper.erase(nod);
+            //tablaUpper.erase(nod);
             tablaUpper.insert(make_pair(nod, make_pair(m, depth)));
         } else if(m >= beta) {
-            tablaLower.erase(nod);
+            //tablaLower.erase(nod);
             tablaLower.insert(make_pair(nod, make_pair(m, depth)));
         } else {
-            tablaExact.erase(nod);
+            //tablaExact.erase(nod);
             tablaExact.insert(make_pair(nod, make_pair(m, depth)));
         }
         
